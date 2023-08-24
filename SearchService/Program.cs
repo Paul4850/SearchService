@@ -14,19 +14,25 @@ builder.Services.AddSwaggerGen();
 
 builder.Services.AddSingleton<ISearchService,  SearchService>();
 builder.Services.Configure<List<SearchProviderSettings>>(builder.Configuration.GetSection("SearchProviderSettings"));
+builder.Services.AddHttpClient();
 
 builder.Services.AddSingleton<ISearchProvider>(p =>
-        new SearchProviderOne(builder.Configuration.GetSection("SearchProviderSettings")
-        .Get<List<SearchProviderSettings>>().Where(s => s.Name == nameof(SearchProviderOne)).First().Uri
+        new SearchProviderOne(
+            p.GetRequiredService<IHttpClientFactory>(),
+            builder.Configuration.GetSection("SearchProviderSettings")
+                .Get<List<SearchProviderSettings>>().Where(s => s.Name == nameof(SearchProviderOne)).First().Uri
     ));
 
 builder.Services.AddSingleton<ISearchProvider>(p =>
-        new SearchProviderTwo(builder.Configuration.GetSection("SearchProviderSettings")
-        .Get<List<SearchProviderSettings>>().Where(s => s.Name == nameof(SearchProviderTwo)).First().Uri
+        new SearchProviderTwo(
+            p.GetRequiredService<IHttpClientFactory>(),
+            builder.Configuration.GetSection("SearchProviderSettings")
+                .Get<List<SearchProviderSettings>>().Where(s => s.Name == nameof(SearchProviderTwo)).First().Uri
     ));
 
 
 builder.Services.AddControllersWithViews();
+
 
 var app = builder.Build();
 

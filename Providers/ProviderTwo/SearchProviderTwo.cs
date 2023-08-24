@@ -7,40 +7,31 @@ using System.Text;
 using System.Threading.Tasks;
 using ProviderOne.ProviderOne;
 using System.Net.Http.Json;
+using System.Net.Http;
 
 namespace ProviderOne.ProviderTwo
 {
-    public class SearchProviderTwo : ISearchProvider, IDisposable
+    public class SearchProviderTwo : ISearchProvider
     {
-        HttpClient httpClient = new HttpClient();
+        private readonly IHttpClientFactory _httpClientFactory;
 
         string uri = "";
         public async Task<bool> IsAvailableAsync(CancellationToken cancellationToken)
         {
             HttpResponseMessage? response = null;
-
-            try
-            {
-                response = await httpClient.GetAsync(uri, cancellationToken);
-            }
-            catch (TaskCanceledException ex)
-            {
-                // log httpClient error
-            }
+            //TODO: handle client errors by a retry policy
+            var httpClient = _httpClientFactory.CreateClient();
+            response = await httpClient.GetAsync(uri, cancellationToken);
             if (response?.StatusCode == System.Net.HttpStatusCode.OK)
                 return true;
             return false;
-        }
-
-        public void Dispose()
-        {
-            httpClient.Dispose();
         }
 
         public async Task<IEnumerable<Route>> SearchAsync(SearchRequest request, CancellationToken cancellationToken)
         {
             //await Task.Delay(3000);
             //return new Route[] { };
+            
             ProviderTwoSearchRequest innerRequest = new ProviderTwoSearchRequest();
             innerRequest.Departure = request.Origin;
             innerRequest.Arrival = request.Destination;
@@ -49,16 +40,12 @@ namespace ProviderOne.ProviderTwo
             innerRequest.MinTimeLimit = request.Filters?.MinTimeLimit;
 
             HttpResponseMessage httpResponse;
-            ProviderTwoSearchResponse? innerResponse = null;
-            try
-            {
-                httpResponse = await httpClient.PostAsJsonAsync(uri, innerRequest, cancellationToken);
-                innerResponse = await httpResponse.Content.ReadFromJsonAsync<ProviderTwoSearchResponse>();
-            }
-            catch (TaskCanceledException ex)
-            {
-                // log httpClient error
-            }
+            var httpClient = _httpClientFactory.CreateClient();
+            //TODO: handle client errors by a retry policy
+            httpResponse = await httpClient.PostAsJsonAsync(uri, innerRequest, cancellationToken);
+            if (!httpResponse.IsSuccessStatusCode)
+                return new List<Route>();
+            var innerResponse = await httpResponse.Content.ReadFromJsonAsync<ProviderTwoSearchResponse>();
 
             var response = innerResponse?.Routes.Select(
                     r => new Route()
@@ -77,9 +64,10 @@ namespace ProviderOne.ProviderTwo
             return response;
         }
 
-        public SearchProviderTwo(string uri)
+        public SearchProviderTwo(IHttpClientFactory httpClientFactory, string uri)
         {
             this.uri = uri;
+            _httpClientFactory = httpClientFactory;
         }
     }
 }

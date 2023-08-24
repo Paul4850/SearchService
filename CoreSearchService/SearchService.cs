@@ -24,10 +24,13 @@ namespace SearchAPI
             var rootsMerged = routs.SelectMany(x =>  x).ToList();
 
             var response = new SearchResponse() { Routes = rootsMerged.ToArray() };
-            response.MinPrice = rootsMerged.Min(r => r.Price);
-            response.MaxPrice = rootsMerged.Max(r => r.Price);
-            response.MinMinutesRoute = (int)rootsMerged.Min(r => r.DestinationDateTime.Subtract(r.OriginDateTime).TotalMinutes);
-            response.MaxMinutesRoute = (int)rootsMerged.Max(r => r.DestinationDateTime.Subtract(r.OriginDateTime).TotalMinutes);
+            if (rootsMerged.Any())
+            {
+                response.MinPrice = rootsMerged.Min(r => r.Price);
+                response.MaxPrice = rootsMerged.Max(r => r.Price);
+                response.MinMinutesRoute = (int)rootsMerged.Min(r => r.DestinationDateTime.Subtract(r.OriginDateTime).TotalMinutes);
+                response.MaxMinutesRoute = (int)rootsMerged.Max(r => r.DestinationDateTime.Subtract(r.OriginDateTime).TotalMinutes);
+            }
             return response;
         }
 

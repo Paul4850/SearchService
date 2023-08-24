@@ -10,21 +10,17 @@ using ProviderOne.ProviderTwo;
 
 namespace ProviderOne.ProviderOne
 {
-    public class SearchProviderOne : ISearchProvider, IDisposable
+    public class SearchProviderOne : ISearchProvider
     {
-        HttpClient httpClient = new HttpClient();
         string uri = "";
+        private readonly IHttpClientFactory _httpClientFactory;
+
         public async Task<bool> IsAvailableAsync(CancellationToken cancellationToken)
         {
             HttpResponseMessage? response = null;
-            try
-            {
-                response = await httpClient.GetAsync(uri, cancellationToken);
-            }
-            catch (TaskCanceledException ex)
-            {
-                // log httpClient error
-            }
+            //TODO: handle client errors by a retry policy
+            var httpClient = _httpClientFactory.CreateClient();
+            response = await httpClient.GetAsync(uri, cancellationToken);
             
             if (response?.StatusCode == System.Net.HttpStatusCode.OK)
                 return true;
@@ -42,16 +38,14 @@ namespace ProviderOne.ProviderOne
             innerRequest.MaxPrice = request.Filters?.MaxPrice;
             
             HttpResponseMessage httpResponse;
-            ProviderOneSearchResponse? innerResponse = null;
-            try
-            {
-                httpResponse = await httpClient.PostAsJsonAsync(uri, innerRequest, cancellationToken);
-                innerResponse = await httpResponse.Content.ReadFromJsonAsync<ProviderOneSearchResponse>();
-            }
-            catch (TaskCanceledException ex)
-            {
-                // log httpClient error
-            }
+            
+            var httpClient = _httpClientFactory.CreateClient();
+            
+            //TODO: handle client errors by a retry policy
+            httpResponse = await httpClient.PostAsJsonAsync(uri, innerRequest, cancellationToken);
+            if (!httpResponse.IsSuccessStatusCode)
+                return new List<Route>();
+            var innerResponse = await httpResponse.Content.ReadFromJsonAsync<ProviderOneSearchResponse>();
             
             var response = innerResponse?.Routes.Select(
                     r => new Route()
@@ -70,13 +64,9 @@ namespace ProviderOne.ProviderOne
             return response;
         }
 
-        public void Dispose()
+        public SearchProviderOne(IHttpClientFactory httpClientFactory, string uri)
         {
-            httpClient.Dispose();
-        }
-
-        public SearchProviderOne(string uri)
-        {
+            _httpClientFactory = httpClientFactory;
             this.uri = uri + "/search";
         }
     }
