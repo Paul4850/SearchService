@@ -4,8 +4,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace ProviderOne.Provider1
+namespace ProviderOne.ProviderOne
 {
+#pragma warning disable CS8618
     public class ProviderOneSearchRequest
     {
         // Mandatory

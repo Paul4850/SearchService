@@ -4,6 +4,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Caching.Memory;
 using System.Xml.Schema;
 using SearchAPI.Controllers;
+using Route = SearchAPI.Contracts.Route;
 
 namespace SearchAPI.Controllers
 {
@@ -59,13 +60,15 @@ namespace SearchAPI.Controllers
             guidUnion.Hash4 = (filters?.DestinationDateTime, filters?.MinTimeLimit, filters?.MaxPrice).GetHashCode();
             return guidUnion.Guid;
         }
-
+     
         [HttpPost]
         [Route("search")]
-        public async Task<SearchResponse> PostRouts(SearchRequest request)
+        public async Task<SearchResponse> Search(SearchRequest request)
         {
-            int cacheExpiration = 5;
+            var cacheExpiration = TimeSpan.FromSeconds(5);
             SearchResponse res = new SearchResponse();
+            if (request == null) return res;
+
             Guid requestKey = GenerateGuid(request.Origin, request.Destination, request.OriginDateTime, request.Filters);
 
             if (_cache.TryGetValue(requestKey, out IEnumerable<SearchAPI.Contracts.Route> routes))
@@ -81,7 +84,7 @@ namespace SearchAPI.Controllers
             }
             else
             {
-                if (request?.Filters?.OnlyCached == true)
+                if (request.Filters?.OnlyCached == true)
                 {
                     return res;
                 }
@@ -95,7 +98,7 @@ namespace SearchAPI.Controllers
                         s_cts.CancelAfter(pingTimeout);
                         res = await searchService.SearchAsync(request, s_cts.Token);
                         var cacheEntryOptions = new MemoryCacheEntryOptions()
-                       .SetAbsoluteExpiration(TimeSpan.FromSeconds(cacheExpiration));
+                       .SetAbsoluteExpiration(cacheExpiration);
                         res.Routes.ToList().ForEach(r => r.Id = requestKey);
                         _cache.Set(requestKey, res.Routes, options: cacheEntryOptions);
                     }

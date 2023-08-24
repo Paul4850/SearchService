@@ -1,5 +1,6 @@
-﻿namespace ProviderOne.Provider2
+﻿namespace ProviderOne.ProviderTwo
 {
+#pragma warning disable CS8618
     public class ProviderTwoPoint
     {
         // Mandatory

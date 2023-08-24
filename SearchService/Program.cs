@@ -3,8 +3,8 @@ using System;
 using Microsoft.Extensions.Configuration;
 using System.Runtime.Intrinsics.Arm;
 using Microsoft.Extensions.DependencyInjection;
-using ProviderOne.Provider1;
-using ProviderOne.Provider2;
+using ProviderOne.ProviderOne;
+using ProviderOne.ProviderTwo;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -16,13 +16,13 @@ builder.Services.AddSingleton<ISearchService,  SearchService>();
 builder.Services.Configure<List<SearchProviderSettings>>(builder.Configuration.GetSection("SearchProviderSettings"));
 
 builder.Services.AddSingleton<ISearchProvider>(p =>
-        new SearchProvider1(builder.Configuration.GetSection("SearchProviderSettings")
-        .Get<List<SearchProviderSettings>>().Where(s => s.Name == nameof(SearchProvider1)).First().Uri
+        new SearchProviderOne(builder.Configuration.GetSection("SearchProviderSettings")
+        .Get<List<SearchProviderSettings>>().Where(s => s.Name == nameof(SearchProviderOne)).First().Uri
     ));
 
 builder.Services.AddSingleton<ISearchProvider>(p =>
-        new SearchProvider2(builder.Configuration.GetSection("SearchProviderSettings")
-        .Get<List<SearchProviderSettings>>().Where(s => s.Name == nameof(SearchProvider2)).First().Uri
+        new SearchProviderTwo(builder.Configuration.GetSection("SearchProviderSettings")
+        .Get<List<SearchProviderSettings>>().Where(s => s.Name == nameof(SearchProviderTwo)).First().Uri
     ));
 
 

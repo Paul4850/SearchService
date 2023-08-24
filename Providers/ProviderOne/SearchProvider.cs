@@ -6,17 +6,17 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Net.Http.Json;
-using ProviderOne.Provider2;
+using ProviderOne.ProviderTwo;
 
-namespace ProviderOne.Provider1
+namespace ProviderOne.ProviderOne
 {
-    public class SearchProvider1 : ISearchProvider, IDisposable
+    public class SearchProviderOne : ISearchProvider, IDisposable
     {
         HttpClient httpClient = new HttpClient();
         string uri = "";
         public async Task<bool> IsAvailableAsync(CancellationToken cancellationToken)
         {
-            HttpResponseMessage response = null;
+            HttpResponseMessage? response = null;
             try
             {
                 response = await httpClient.GetAsync(uri, cancellationToken);
@@ -75,7 +75,7 @@ namespace ProviderOne.Provider1
             httpClient.Dispose();
         }
 
-        public SearchProvider1(string uri)
+        public SearchProviderOne(string uri)
         {
             this.uri = uri + "/search";
         }

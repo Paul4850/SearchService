@@ -1,5 +1,6 @@
 ﻿namespace SearchAPI.Contracts
 {
+#pragma warning disable CS8618
     public class SearchResponse
     {
         // Mandatory
@@ -22,4 +23,5 @@
         // The longest route
         public int MaxMinutesRoute { get; set; }
     }
+#pragma warning restore CS8618
 }

@@ -1,12 +1,14 @@
-﻿using System;
+﻿using ProviderOne.ProviderOne;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Text.Json.Serialization;
 using System.Threading.Tasks;
 
-namespace ProviderOne.Provider1
+namespace ProviderOne.ProviderOne
 {
+#pragma warning disable CS8618
     public class ProviderOneSearchResponse
     {
         // Mandatory

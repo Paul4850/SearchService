@@ -7,7 +7,6 @@ namespace SearchAPI
     public class SearchService : ISearchService
     {
         IEnumerable<ISearchProvider> providers;
-        int timeout = 1000;
 
         public async Task<bool> IsAvailableAsync(CancellationToken cancellationToken)
         {
@@ -17,8 +16,6 @@ namespace SearchAPI
             return await res;
         }
 
-        List<Route> routesCache = new List<Route>();
-
         public async Task<SearchResponse> SearchAsync(SearchRequest request, CancellationToken cancellationToken)
         {
             var tasks = providers.Select(p => p.SearchAsync(request, cancellationToken));
@@ -26,7 +23,6 @@ namespace SearchAPI
             var routs = await aggregatedTasks;
             var rootsMerged = routs.SelectMany(x =>  x).ToList();
 
-            routesCache.AddRange(rootsMerged);
             var response = new SearchResponse() { Routes = rootsMerged.ToArray() };
             response.MinPrice = rootsMerged.Min(r => r.Price);
             response.MaxPrice = rootsMerged.Max(r => r.Price);

@@ -1,5 +1,6 @@
 ﻿namespace SearchAPI.Contracts
 {
+#pragma warning disable CS8618
     public class SearchRequest
     {
         // Mandatory
@@ -17,4 +18,5 @@
         // Optional
         public SearchFilters? Filters { get; set; }
     }
+#pragma warning restore CS8618
 }

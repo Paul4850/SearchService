@@ -5,19 +5,19 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using ProviderOne.Provider1;
+using ProviderOne.ProviderOne;
 using System.Net.Http.Json;
 
-namespace ProviderOne.Provider2
+namespace ProviderOne.ProviderTwo
 {
-    public class SearchProvider2 : ISearchProvider, IDisposable
+    public class SearchProviderTwo : ISearchProvider, IDisposable
     {
         HttpClient httpClient = new HttpClient();
 
         string uri = "";
         public async Task<bool> IsAvailableAsync(CancellationToken cancellationToken)
         {
-            HttpResponseMessage response = null;
+            HttpResponseMessage? response = null;
 
             try
             {
@@ -77,7 +77,7 @@ namespace ProviderOne.Provider2
             return response;
         }
 
-        public SearchProvider2(string uri)
+        public SearchProviderTwo(string uri)
         {
             this.uri = uri;
         }

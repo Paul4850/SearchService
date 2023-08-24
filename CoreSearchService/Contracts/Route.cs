@@ -1,5 +1,6 @@
 ﻿namespace SearchAPI.Contracts
 {
+#pragma warning disable CS8618
     public class Route
     {
         // Mandatory
@@ -30,4 +31,5 @@
         // Timelimit. After it expires, route became not actual
         public DateTime TimeLimit { get; set; }
     }
+#pragma warning restore CS8618
 }

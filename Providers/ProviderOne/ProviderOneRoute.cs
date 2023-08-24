@@ -1,5 +1,6 @@
-﻿namespace ProviderOne.Provider1
+﻿namespace ProviderOne.ProviderOne
 {
+#pragma warning disable CS8618
     public class ProviderOneRoute
     {
         // Mandatory
@@ -26,4 +27,5 @@
         // Timelimit. After it expires, route became not actual
         public DateTime TimeLimit { get; set; }
     }
+#pragma warning disable CS8618
 }

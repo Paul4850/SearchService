@@ -12,7 +12,11 @@
 
   <ItemGroup>
     <ProjectReference Include="..\CoreSearchService\CoreSearchService.csproj" />
-    <ProjectReference Include="..\ProviderOne\ProviderOne.csproj" />
+    <ProjectReference Include="..\Providers\Providers.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="Contracts\" />
   </ItemGroup>
 
 </Project>
